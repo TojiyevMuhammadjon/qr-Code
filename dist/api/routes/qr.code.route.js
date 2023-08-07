@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.then = void 0;
+const express_1 = require("express");
+const qr_code_route_1 = require("../controllers/qr.code.route");
+exports.then = (0, express_1.Router)();
+exports.then.get("/signqr", qr_code_route_1.qrCode);
+exports.then.get("/getqr", qr_code_route_1.signQr);
+exports.then.get("/qrscanner", qr_code_route_1.qrcodeIs);
+exports.then.post("/getDownloadURL/:id", qr_code_route_1.qrcodeIs);

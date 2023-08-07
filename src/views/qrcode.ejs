@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Generator</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+
+    <script src="./node_modules/html5-qrcode/html5-qrcode.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"
+      integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <style>
+      main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #reader {
+        width: 600px;
+      }
+      #result {
+        text-align: center;
+        font-size: 1.5rem;
+      }
+    </style>
+
+    <main>
+      <div id="reader"></div>
+      <div id="result"></div>
+    </main>
+
+    <script>
+      //
+      const scanner = new Html5QrcodeScanner("reader", {
+        // Scanner will be initialized in DOM inside element with id of 'reader'
+        qrbox: {
+          width: 250,
+          height: 250,
+        }, // Sets dimensions of scanning box (set relative to reader element width)
+        fps: 20, // Frames per second to attempt a scan
+      });
+
+      scanner.render(success, error);
+      // Starts scanner
+
+      function success(result) {
+        document.getElementById("result").innerHTML = `
+        <h2>Success!</h2>
+        <p><a href="${result}">${result}</a></p>
+        `;
+        // Prints result as a link inside result element
+
+        scanner.clear();
+        // Clears scanning instance
+
+        document.getElementById("reader").remove();
+        // Removes reader element from DOM since no longer needed
+      }
+
+      function error(err) {
+        console.error(err);
+        // Prints any errors to the console
+      }
+    </script>
+
+    <style>
+      body {
+        padding-top: 70px;
+      }
+      #scan {
+        margin-left: 95px;
+      }
+
+      #generate {
+        margin-right: 95px;
+      }
+    </style>
+  </head>
+  <body class="bg-body-tertiary">
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+      <div class="container justify-content-center">
+        <a id="generate" class="navbar-brand" href="/">QR Code Generator</a>
+        <div id="scan" class="nav nav-pills flex-column flex-sm-row">
+          <a
+            class="flex-sm-fill text-sm-center nav-link active"
+            href="/getDownloadURL/:id"
+            >QR Code Scaner</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <div class="container py-4" style="width: 800px; margin: 0 auto">
+      <h1 class="text-center">Your QRCode download and view</h1>
+      <form
+        action="/getDownloadURL/:id"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <div class="row justify-content-center">
+          <div class="col-md-auto mb-4">
+            <div class="card h-100">
+              <img
+                id="qrcodeImage"
+                class="card-img-top"
+                width="200px"
+                height="200px"
+                src="https://deconova.eu/wp-content/uploads/2016/02/default-placeholder.png"
+                alt="qrcode"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center">
+          <input
+            type="file"
+            name="image"
+            class="form-control"
+            id="inputGroupFile02"
+            style="width: 500px"
+          />
+        </div>
+        <div class="d-flex justify-content-center mt-3">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="padding: 10px 20px; margin: 0"
+          >
+            <i class="fa fa-upload" aria-hidden="true"></i> Upload Your QR Code
+            image
+          </button>
+        </div>
+      </form>
+    </div>
+
+    Muhammad, [8/7/2023 2:24 PM]
+    <!-- <script>
+      fetch("http://localhost:4000/signqr").then(res => {
+        res.json();
+      }).then(data => {
+        console.log(data);
+      }).catch(err => {
+        console.log(err);
+      })
+    </script> -->
+    <script>
+      document.getElementById("result").addEventListener("click", function () {
+        fetch("/getDownloadURL/:id")
+          .then((response) => response.json())
+          .then((data) => {
+            // Redirect or open a new window/tab to initiate the file download
+            window.open(data.downloadURL);
+          })
+          .catch((error) => console.log(error));
+      });
+      document
+        .getElementById("downloadBtn")
+        .addEventListener("click", function () {
+          fetch("/getDownloadURL/:id")
+            .then((response) => response.json())
+            .then((data) => {
+              // Redirect or open a new window/tab to initiate the file download
+              window.open(data.downloadURL);
+            })
+            .catch((error) => console.log(error));
+        });
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      document
+        .getElementById("inputGroupFile02")
+        .addEventListener("change", function (event) {
+          var input = event.target;
+          if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              var image = document.getElementById("qrcodeImage");
+              image.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+          }
+        });
+    </script>
+    <script>
+      // ... (other frontend code)
+
+      function success(result) {
+        // ... (other frontend code)
+
+        // Extract the ID from the 'result' and send it to the backend using a GET request
+        const id = extractIdFromResult(result);
+        fetch(`/getDownloadURL/:id`)
+          .then((response) => response.json())
+          .then((data) => {
+            // Redirect or open a new window/tab to initiate the file download
+            window.open(data.downloadURL);
+          })
+          .catch((error) => console.log(error));
+
+        // ... (other frontend code)
+      }
+
+      function extractIdFromResult(result) {
+        // You need to implement this function to extract the ID from the 'result'
+        // and return it to be used in the fetch URL.
+        // For example, if the 'result' is a URL like "https://example.com/qr-code/64d0bf5013b609de7a2d5d2d",
+        // then you can extract the ID as follows:
+        // const parts = result.split("/");
+        // const id = parts[parts.length - 1];
+        // return id;
+        // Implement this function based on the actual structure of the 'result'.
+      }
+    </script>
+    <script>
+      // ... (other frontend code)
+
+      function success(result) {
+        // ... (other frontend code)
+
+        // Extract the ID from the 'result' and send it to the backend using a GET request
+        const id = extractIdFromResult(result);
+        fetch(`/getDownloadURL/${id}`)
+          .then((response) => response.json())
+          .then((data) => {
+            // Redirect or open a new window/tab to initiate the file download
+            window.open(data.downloadURL);
+          })
+          .catch((error) => console.log(error));
+
+        // ... (other frontend code)
+      }
+
+      function extractIdFromResult(result) {
+        // Assuming the 'result' is a URL like "https://example.com/qr-code/64d0bf5013b609de7a2d5d2d",
+        // extract the ID after the last slash '/'
+        const parts = result.split("/");
+        const id = parts[parts.length - 1];
+        return id;
+      }
+    </script>
+    <script>
+      function success(result) {
+        fetch("/qrscanner", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ qrCodeResult: result }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Log the response from the backend (you can handle the response as needed)
+            console.log(data);
+          })
+          .catch((error) => console.log(error));
+
+        // ... (other frontend code)
+        console.log(JSON.stringify({ qrCodeResult: result }));
+      }
+
+      // ... (other frontend code)
+    </script>
+    <script>
+      const options = {
+          method: 'GET',
+          url: 'http://localhost:4000/signqr',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-RapidAPI-Key': '74cc79460fmsh3c6d0abcb93703cp140eb4jsn8975796733b1',
+              'X-RapidAPI-Host': 'textapis.p.rapidapi.com',
+          },
+          body: '{"url":"http://localhost:4000/signqr"}',
+      };
+      fetch('https://textapis.p.rapidapi.com/text', options)
+          .then(response => response.json())
+          .then(response => console.log(response))
+          .catch(err => console.error(err));
+  </script>
+  </body>
+</html>
